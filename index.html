@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ProSheet · Herramientas Google Sheets a Medida</title>
+  <meta name="description" content="Herramientas de Google Sheets 100% personalizadas para entrenadores y nutricionistas online. Optimiza tu negocio con automatizaciones a medida." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── DARK MODE (default) ── */
+    :root {
+      --bg:       #07080b;
+      --bg2:      #0c0e14;
+      --surface:  #111318;
+      --surface2: #161920;
+      --border:   #1c2030;
+      --border2:  #252a3a;
+      --cyan:     #2fe8b8;
+      --blue:     #3a9eff;
+      --grad:     linear-gradient(135deg, #2fe8b8 0%, #3a9eff 100%);
+      --text:     #dde3f0;
+      --text2:    #c4cce0;
+      --muted:    #6b7490;
+      --r:        16px;
+      --r-sm:     10px;
+      --nav-bg:   rgba(7,8,11,.88);
+      --shadow-card: 0 4px 24px rgba(0,0,0,.35);
+    }
+
+    /* ── LIGHT MODE ── */
+    body.light {
+      --bg:       #f5f7fa;
+      --bg2:      #eef0f5;
+      --surface:  #ffffff;
+      --surface2: #f0f2f7;
+      --border:   #dde1ec;
+      --border2:  #c8cedd;
+      --cyan:     #0a7a5e;
+      --blue:     #1358b5;
+      --grad:     linear-gradient(135deg, #0a7a5e 0%, #1358b5 100%);
+      --text:     #141720;
+      --text2:    #2e3448;
+      --muted:    #7a839e;
+      --nav-bg:   rgba(245,247,250,.92);
+      --shadow-card: 0 4px 24px rgba(0,0,0,.09);
+    }
+    body.light .btn-primary,
+    body.light .nav-cta,
+    body.light .form-submit,
+    body.light .pricing-cta-wrap .btn-primary { color: #ffffff; }
+    body.light .hero-badge { border-color: rgba(10,122,94,.4); background: rgba(10,122,94,.1); }
+    body.light .step-hl { background: rgba(10,122,94,.08); border-color: rgba(10,122,94,.25); }
+    body.light .pill-green { background: rgba(10,122,94,.12); }
+    body.light .pill-blue  { background: rgba(19,88,181,.12); }
+    body.light .ptag { background: rgba(10,122,94,.08); border-color: rgba(10,122,94,.25); }
+    body.light .about-feat:hover { box-shadow: 0 8px 32px rgba(10,122,94,.1); }
+    body.light .contact-btn:hover { border-color: rgba(10,122,94,.45); box-shadow: 0 8px 28px rgba(10,122,94,.1); }
+    body.light .btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); }
+    body.light .faq-q:hover { color: var(--cyan); }
+    body.light .faq-item.open .faq-arrow { border-color: var(--cyan); color: var(--cyan); }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 400;
+      line-height: 1.7;
+      overflow-x: hidden;
+      transition: background .3s, color .3s;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; opacity: .022;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px;
+    }
+
+    .blob { position: fixed; border-radius: 50%; filter: blur(130px); opacity: .1; pointer-events: none; z-index: 0; transition: opacity .3s; }
+    .blob-1 { width: 700px; height: 700px; background: #2fe8b8; top: -250px; right: -200px; animation: blobDrift 14s ease-in-out infinite alternate; }
+    .blob-2 { width: 550px; height: 550px; background: #3a9eff; bottom: -150px; left: -150px; animation: blobDrift 18s ease-in-out infinite alternate-reverse; }
+    body.light .blob { opacity: .06; }
+    @keyframes blobDrift { from{transform:translate(0,0)} to{transform:translate(30px,20px)} }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 5%;
+      background: var(--nav-bg);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: background .3s, border-color .3s;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-logo img { width: 34px; height: 34px; object-fit: contain; }
+    .nav-logo-text { font-weight: 800; font-size: 1.1rem; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+    /* Nav links — centered absolutely so they don't get pushed by the asymmetric sides */
+    .nav-links {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 28px;
+    }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: .88rem; font-weight: 500; transition: color .2s; }
+    .nav-links a:hover { color: var(--text); }
+
+    /* nav right group */
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+
+    /* Theme toggle button */
+    .theme-toggle {
+      width: 38px; height: 38px; border-radius: 50%;
+      border: 1px solid var(--border2);
+      background: var(--surface);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color .2s, background .2s, transform .2s;
+      flex-shrink: 0;
+    }
+    .theme-toggle:hover { border-color: var(--cyan); transform: rotate(15deg); }
+    .theme-toggle svg { width: 17px; height: 17px; transition: opacity .2s; }
+    .icon-moon { display: block; }
+    .icon-sun  { display: none; }
+    body.light .icon-moon { display: none; }
+    body.light .icon-sun  { display: block; }
+
+    .nav-cta {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 22px; border-radius: 999px;
+      background: var(--grad); color: #07080b;
+      font-weight: 700; font-size: .85rem;
+      text-decoration: none; transition: opacity .2s, transform .2s;
+    }
+    .nav-cta:hover { opacity: .85; transform: translateY(-1px); }
+
+    /* ── SHARED WRAPPER — same width for hero and all other sections ── */
+    .wrap { position: relative; z-index: 1; max-width: 1120px; margin: 0 auto; padding: 0 5%; }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh; display: flex; align-items: center;
+      padding: 120px 0 70px; position: relative;
+    }
+    /* Hero inner now uses .wrap so it matches all other sections */
+    .hero-inner { max-width: 1120px; margin: 0 auto; width: 100%; padding: 0 5%; }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 16px; border-radius: 999px;
+      border: 1px solid rgba(47,232,184,.35); background: rgba(47,232,184,.07);
+      font-size: .75rem; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--cyan); margin-bottom: 28px;
+      animation: fadeUp .7s ease both;
+    }
+    .hero-badge-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 8px var(--cyan); animation: pulse 2s infinite; flex-shrink:0; }
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.35} }
+
+    /* Hero content centered */
+    .hero-content { text-align: center; }
+
+    h1 { font-weight: 800; font-size: clamp(2.6rem, 5vw, 4.2rem); line-height: 1.1; margin-bottom: 20px; animation: fadeUp .7s .08s ease both; }
+    .grad-text { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+    .hero-desc { font-size: 1.08rem; color: var(--text2); line-height: 1.75; margin-bottom: 40px; animation: fadeUp .7s .16s ease both; max-width: 640px; margin-left: auto; margin-right: auto; }
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; animation: fadeUp .7s .24s ease both; justify-content: center; }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 28px; border-radius: 999px;
+      background: var(--grad); color: #07080b;
+      font-weight: 700; font-size: .95rem;
+      text-decoration: none; transition: transform .2s, box-shadow .2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 40px rgba(47,232,184,.28); }
+
+    /* Ghost button same width as primary — achieved via flex + min-width matching */
+    .btn-ghost {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 14px 28px; border-radius: 999px;
+      border: 1px solid var(--border2); color: var(--text2);
+      font-weight: 600; font-size: .95rem;
+      text-decoration: none; background: transparent;
+      transition: border-color .2s, color .2s;
+    }
+    .btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    .hero-stats {
+      display: flex; gap: 36px; margin-top: 48px; flex-wrap: wrap;
+      animation: fadeUp .7s .32s ease both; padding-top: 40px;
+      border-top: 1px solid var(--border);
+      justify-content: center; /* centered */
+    }
+    .stat-num { font-weight: 800; font-size: 1.9rem; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .stat-label { font-size: .75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-top: 1px; text-align: center; }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ── SECTIONS ── */
+    .section-sep { border: none; border-top: 1px solid var(--border); margin: 0; }
+    .sec-label { font-size:.72rem; text-transform:uppercase; letter-spacing:.12em; color:var(--cyan); font-weight:600; margin-bottom:12px; text-align:center; }
+    .sec-title { font-weight:800; font-size:clamp(1.75rem,3.2vw,2.6rem); line-height:1.15; margin-bottom:14px; text-align:center; }
+    .sec-sub { color:var(--muted); font-size:1rem; line-height:1.75; text-align:center; }
+
+    /* ── ABOUT (rows layout) ── */
+    #about { padding: 72px 0; }
+    .about-header { margin-bottom: 36px; text-align: center; }
+    .about-profile {
+      display: flex; align-items: flex-start; gap: 22px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 28px 30px; margin-bottom: 20px;
+      position: relative; overflow: hidden;
+      box-shadow: var(--shadow-card);
+      transition: border-color .2s;
+    }
+    .about-card-logo { width: 64px; height: 64px; border-radius: 14px; background: var(--bg2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 8px; overflow: hidden; }
+    .about-card-logo img { width: 100%; height: 100%; object-fit: contain; }
+    .about-profile-info { flex: 1; }
+    .about-name { font-weight: 800; font-size: 1.15rem; margin-bottom: 4px; }
+    .about-role { color: var(--cyan); font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 12px; font-weight: 600; }
+    /* Text and chips start at left edge of the info column, no extra indent */
+    .about-text { color: var(--muted); line-height: 1.8; font-size: .9rem; margin-bottom: 16px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 7px; }
+    .chip { padding: 5px 13px; border-radius: 999px; border: 1px solid var(--border); background: rgba(255,255,255,.025); font-size: .75rem; color: var(--text2); transition: border-color .2s; }
+    body.light .chip { background: var(--bg2); }
+    .about-features { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+    @media (max-width: 760px) { .about-features { grid-template-columns: 1fr; } }
+    .about-feat {
+      display: flex; align-items: center; gap: 12px;
+      padding: 20px 18px; border-radius: var(--r-sm);
+      background: var(--surface); border: 1px solid var(--border);
+      transition: border-color .2s, box-shadow .2s;
+      box-shadow: var(--shadow-card);
+      /* align-items:center ensures vertical centering of content */
+    }
+    .about-feat:hover { border-color: var(--border2); box-shadow: 0 8px 32px rgba(47,232,184,.08); }
+    /* Icon using Font Awesome — styled to match the grad accent */
+    .about-feat-icon {
+      flex-shrink: 0;
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      background: rgba(47,232,184,.1);
+      border: 1px solid rgba(47,232,184,.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      color: var(--cyan);
+    }
+    body.light .about-feat-icon { background: rgba(10,122,94,.1); border-color: rgba(10,122,94,.25); }
+    .about-feat-title { font-weight: 600; font-size: .88rem; margin-bottom: 3px; }
+    .about-feat-text { color: var(--muted); font-size: .81rem; line-height: 1.6; }
+
+    /* ── METHODOLOGY ── */
+    #metodologia { padding: 72px 0; }
+    .steps { display:flex; flex-direction:column; gap:0; margin-top:48px; position:relative; }
+    .steps::before { content:''; position:absolute; left:35px; top:0; bottom:0; width:1px; background:linear-gradient(to bottom,var(--cyan),var(--blue) 60%,transparent); }
+    .step { display:flex; gap:28px; padding-bottom:44px; }
+    .step:last-child { padding-bottom:0; }
+    .step-num {
+      flex-shrink:0; width:70px; height:70px; border-radius:50%;
+      background:var(--surface); border:2px solid var(--cyan);
+      display:flex; align-items:center; justify-content:center;
+      font-weight:800; font-size:1.8rem; color:var(--cyan);
+      position:relative; z-index:1;
+      box-shadow:0 0 28px rgba(47,232,184,.22);
+    }
+    .step-body { padding-top:14px; }
+    .step-tag { font-weight:800; font-size:1.08rem; color:var(--text); margin-bottom:6px; line-height:1.2; }
+    .step-title { font-weight:500; font-size:.9rem; color:var(--muted); margin-bottom:10px; }
+    .step-text { color:var(--muted); font-size:.88rem; line-height:1.75; }
+    .step-hl { margin-top:14px; padding:12px 16px; background:rgba(47,232,184,.06); border:1px solid rgba(47,232,184,.2); border-radius:8px; font-size:.85rem; color:var(--cyan); line-height:1.55; }
+    body.light .step-hl { background:rgba(47,232,184,.08); }
+
+    /* ── PRICING ── */
+    #tarifas { padding: 72px 0; }
+    .pricing-wrap { max-width:640px; margin:48px auto 0; }
+    .pricing-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); overflow:hidden; position:relative; box-shadow: var(--shadow-card); }
+    .pricing-card::after { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%,rgba(47,232,184,.1),transparent 65%); pointer-events:none; }
+    .pricing-top { padding:40px; border-bottom:1px solid var(--border); position:relative; z-index:1; }
+    .pricing-label { font-size:.7rem; text-transform:uppercase; letter-spacing:.1em; color:var(--cyan); font-weight:600; margin-bottom:12px; }
+    .pricing-amount { font-weight:800; font-size:3.4rem; display:flex; align-items:flex-start; gap:4px; line-height:1; margin-bottom:8px; }
+    .pricing-amount sup { font-size:1.3rem; margin-top:10px; }
+    .pricing-amount sub { font-size:.9rem; align-self:flex-end; margin-bottom:6px; color:var(--muted); font-weight:400; }
+    .pricing-note { color:var(--muted); font-size:.87rem; margin-top:10px; line-height:1.6; }
+    .pricing-features { padding:32px 40px; }
+    .feat { display:flex; align-items:flex-start; gap:13px; margin-bottom:20px; }
+    .feat:last-child { margin-bottom:0; }
+    .feat-icon { flex-shrink:0; width:20px; height:20px; margin-top:3px; color:var(--cyan); }
+    .feat-icon svg { width:100%; height:100%; }
+    .feat-text strong { display:block; font-weight:600; font-size:.9rem; margin-bottom:2px; }
+    .feat-text span { color:var(--muted); font-size:.83rem; }
+    .pricing-cta-wrap { padding:0 40px 40px; }
+    .pricing-cta-wrap .btn-primary { width:100%; justify-content:center; font-size:1rem; padding:16px; }
+
+    /* ── PORTFOLIO ── */
+    #portfolio { padding: 72px 0; }
+    .portfolio-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin-top:48px; }
+    .portfolio-card {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:var(--r); overflow:hidden;
+      transition:transform .3s cubic-bezier(.22,1,.36,1), border-color .3s, box-shadow .3s;
+      box-shadow: var(--shadow-card);
+    }
+    .portfolio-card:hover { transform:translateY(-6px); border-color:rgba(47,232,184,.35); box-shadow:0 20px 60px rgba(0,0,0,.3); }
+    .portfolio-img-wrap { position:relative; height:230px; overflow:hidden; background:var(--bg2); }
+    .portfolio-img-wrap img { width:100%; height:100%; object-fit:cover; object-position:top; transition:transform .5s ease; display:block; }
+    .portfolio-card:hover .portfolio-img-wrap img { transform:scale(1.05); }
+    .portfolio-img-overlay { position:absolute; inset:0; background:linear-gradient(to top, rgba(7,8,11,.85) 0%, transparent 55%); }
+    body.light .portfolio-img-overlay { background:linear-gradient(to top, rgba(245,247,250,.85) 0%, transparent 55%); }
+    .portfolio-img-tag { position:absolute; top:14px; left:14px; padding:4px 11px; border-radius:999px; background:rgba(7,8,11,.75); backdrop-filter:blur(8px); border:1px solid var(--border2); font-size:.7rem; font-weight:600; color:var(--cyan); text-transform:uppercase; letter-spacing:.08em; }
+    .portfolio-body { padding:22px 24px 26px; }
+    .portfolio-title { font-weight:700; font-size:.98rem; margin-bottom:8px; line-height:1.3; }
+    .portfolio-desc { color:var(--muted); font-size:.83rem; line-height:1.65; margin-bottom:14px; }
+    .portfolio-tags { display:flex; flex-wrap:wrap; gap:6px; }
+    .ptag { padding:3px 10px; border-radius:999px; background:rgba(47,232,184,.07); border:1px solid rgba(47,232,184,.18); font-size:.7rem; color:var(--cyan); font-weight:500; }
+
+    /* ── FAQ ── */
+    #faq { padding: 72px 0; }
+    .faq-list { max-width:720px; margin:48px auto 0; display:flex; flex-direction:column; gap:10px; }
+    .faq-item { background:var(--surface); border:1px solid var(--border); border-radius:var(--r-sm); overflow:hidden; transition:border-color .2s; box-shadow: var(--shadow-card); }
+    .faq-item.open { border-color:var(--border2); }
+    .faq-q { width:100%; background:none; border:none; color:var(--text); display:flex; justify-content:space-between; align-items:center; padding:20px 22px; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; font-size:.92rem; font-weight:500; text-align:left; gap:16px; transition:color .2s; }
+    .faq-q:hover { color:var(--cyan); }
+    .faq-arrow { flex-shrink:0; width:22px; height:22px; border-radius:50%; border:1.5px solid var(--border2); display:flex; align-items:center; justify-content:center; font-size:.65rem; color:var(--muted); transition:transform .35s, border-color .2s, color .2s; }
+    .faq-item.open .faq-arrow { transform:rotate(180deg); border-color:var(--cyan); color:var(--cyan); }
+    .faq-body { max-height:0; overflow:hidden; transition:max-height .4s ease; }
+    .faq-item.open .faq-body { max-height:250px; }
+    .faq-body p { padding:0 22px 20px; color:var(--muted); font-size:.88rem; line-height:1.75; }
+
+    /* ── CONTACT (column layout) ── */
+    #contacto { padding: 72px 0 60px; }
+    .contact-intro { color:var(--muted); font-size:.95rem; line-height:1.8; margin-top:16px; margin-bottom:36px; text-align:center; }
+    .contact-methods { display:grid; grid-template-columns:repeat(2,1fr); gap:11px; margin-bottom:36px; }
+    @media (max-width:640px) { .contact-methods { grid-template-columns:1fr; } }
+    .contact-btn { display:flex; align-items:center; gap:15px; padding:15px 20px; border-radius:12px; text-decoration:none; border:1px solid var(--border); background:var(--surface); transition:border-color .2s, transform .2s, background .2s; box-shadow: var(--shadow-card); }
+    .contact-btn:hover { border-color:rgba(47,232,184,.4); transform:translateY(-2px); background:var(--surface2); box-shadow: 0 8px 28px rgba(47,232,184,.1); }
+    .contact-btn-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .wb-icon  { background:linear-gradient(135deg,#25D366,#128C7E); }
+    .ig-icon  { background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); }
+    .em-icon  { background:linear-gradient(135deg,#3a9eff,#2fe8b8); }
+    .contact-btn-label { font-weight:700; font-size:.87rem; color:var(--text); margin-bottom:1px; }
+    .contact-btn-sub   { font-size:.76rem; color:var(--muted); }
+
+    /* Contact form — full width below buttons */
+    .contact-form-card {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:var(--r); padding:32px 36px;
+      box-shadow: var(--shadow-card);
+    }
+    .form-title { font-weight:700; font-size:1.05rem; margin-bottom:20px; }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    @media (max-width:640px) { .form-row { grid-template-columns:1fr; } }
+    .form-group { margin-bottom:15px; }
+    .form-group label { display:block; font-size:.77rem; color:var(--muted); margin-bottom:6px; font-weight:500; }
+    .form-group input, .form-group textarea, .form-group select {
+      width:100%; background:var(--bg2); border:1px solid var(--border);
+      border-radius:8px; color:var(--text); font-family:'Plus Jakarta Sans',sans-serif;
+      font-size:.87rem; padding:11px 14px; outline:none; transition:border-color .2s;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color:var(--cyan); }
+    .form-group textarea { min-height:100px; resize:vertical; }
+    .form-group select option { background:var(--bg2); }
+    .form-submit { width:100%; padding:13px; border-radius:999px; background:var(--grad); color:#07080b; font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:.95rem; border:none; cursor:pointer; transition:opacity .2s, transform .2s; margin-top:4px; }
+    .form-submit:hover { opacity:.85; transform:translateY(-1px); }
+    .form-note { font-size:.72rem; color:var(--muted); margin-top:9px; text-align:center; }
+
+    /* ── FOOTER ── */
+    footer { border-top:1px solid var(--border); padding:28px 5%; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; position:relative; z-index:1; }
+    .footer-logo { display:flex; align-items:center; gap:8px; text-decoration:none; }
+    .footer-logo img { width:26px; object-fit:contain; }
+    .footer-logo-text { font-weight:800; font-size:.9rem; background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .footer-copy { color:var(--muted); font-size:.78rem; }
+
+    /* ── WA FLOAT ── */
+    .wa-float { position:fixed; bottom:26px; right:26px; z-index:200; width:56px; height:56px; border-radius:50%; background:linear-gradient(135deg,#25D366,#128C7E); display:flex; align-items:center; justify-content:center; box-shadow:0 6px 28px rgba(37,211,102,.45); text-decoration:none; animation:bounceIn .8s 1.4s ease both; transition:transform .2s, box-shadow .2s; }
+    .wa-float:hover { transform:scale(1.1); box-shadow:0 10px 40px rgba(37,211,102,.55); }
+    .wa-float svg { width:26px; height:26px; fill:white; }
+    @keyframes bounceIn { from{opacity:0;transform:scale(.4)} 80%{transform:scale(1.12)} to{opacity:1;transform:scale(1)} }
+
+    .reveal { opacity:0; transform:translateY(26px); transition:opacity .7s ease, transform .7s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width:900px) {
+      .portfolio-grid { grid-template-columns:1fr 1fr; }
+      .nav-links { display:none; }
+      .pricing-top, .pricing-features, .pricing-cta-wrap { padding-left:24px; padding-right:24px; }
+    }
+    @media (max-width:640px) {
+      h1 { font-size:2.2rem; }
+      .hero-stats { gap:22px; }
+      #hero { padding:100px 0 60px; }
+      .portfolio-grid { grid-template-columns:1fr; }
+      .contact-form-card { padding:24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#hero" class="nav-logo">
+      <img src="logo.png" alt="ProSheet" />
+      <span class="nav-logo-text">ProSheet</span>
+    </a>
+    <div class="nav-links">
+      <a href="#about">Sobre mí</a>
+      <a href="#metodologia">Metodología</a>
+      <a href="#tarifas">Tarifas</a>
+      <a href="#portfolio">Portafolio</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle" title="Alternar modo claro/oscuro" aria-label="Alternar tema">
+        <!-- Moon (dark mode icon, shown by default) -->
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text)">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+        <!-- Sun (light mode icon) -->
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text)">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1" x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+      </button>
+      <a href="https://wa.me/34651381966?text=Hola%20Álvaro%2C%20me%20interesa%20una%20herramienta%20de%20Google%20Sheets" target="_blank" class="nav-cta">Hablemos →</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-inner">
+      <div class="hero-content">
+        <div class="hero-badge"><span class="hero-badge-dot"></span>Disponible para nuevos proyectos</div>
+        <h1>Google Sheets<br /><span class="grad-text">hecho para ti.</span></h1>
+        <p class="hero-desc">Soy Álvaro, graduado en ciencias del deporte y especialista en crear herramientas de Google Sheets para entrenadores y nutricionistas online. Automatizo tu negocio con soluciones 100% personalizadas.</p>
+        <div class="hero-actions">
+          <a href="https://wa.me/34651381966?text=Hola%20Álvaro%2C%20me%20interesa%20una%20herramienta%20de%20Google%20Sheets%20para%20mi%20negocio" target="_blank" class="btn-primary">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Solicitar llamada inicial
+          </a>
+          <a href="#metodologia" class="btn-ghost">Ver metodología ↓</a>
+        </div>
+        <div class="hero-stats">
+          <div style="text-align:center"><div class="stat-num">100%</div><div class="stat-label">A medida</div></div>
+          <div style="text-align:center"><div class="stat-num">+2 años</div><div class="stat-label">Experiencia</div></div>
+          <div style="text-align:center"><div class="stat-num">24/7</div><div class="stat-label">Soporte técnico</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-sep" />
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="wrap">
+      <div class="about-header reveal">
+        <div class="sec-label">Sobre mí</div>
+        <h2 class="sec-title">Más que hojas de cálculo,<br /><span class="grad-text">sistemas que trabajan para ti</span></h2>
+        <p class="sec-sub">Mi objetivo es que dejes de dedicar horas a tareas repetitivas y te centres en lo que realmente importa: tus clientes.</p>
+      </div>
+      <div class="about-profile reveal">
+        <div class="about-card-logo"><img src="logo.png" alt="ProSheet logo" /></div>
+        <div class="about-profile-info">
+          <div class="about-name">Álvaro</div>
+          <div class="about-role">Desarrollador en Google Sheets</div>
+          <div class="about-text">Combino mi formación en Ciencias del deporte con un dominio profundo de Google Sheets para crear herramientas reales que mejoren tu negocio online.</div>
+          <div class="chips">
+            <span class="chip">Entrenamiento online</span>
+            <span class="chip">Nutrición</span>
+            <span class="chip">Automatizaciones</span>
+            <span class="chip">Gestión de clientes</span>
+            <span class="chip">Contabilidad</span>
+            <span class="chip">Gestión de inventario</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature cards — row of three -->
+      <div class="about-features">
+        <div class="about-feat reveal">
+          <div class="about-feat-icon"><i class="fa-solid fa-bullseye"></i></div>
+          <div>
+            <div class="about-feat-title">100% personalizado</div>
+            <div class="about-feat-text">Cada proyecto parte de cero, adaptado a tu flujo real de trabajo.</div>
+          </div>
+        </div>
+        <div class="about-feat reveal">
+          <div class="about-feat-icon"><i class="fa-solid fa-bolt"></i></div>
+          <div>
+            <div class="about-feat-title">Automatización real</div>
+            <div class="about-feat-text">Fórmulas avanzadas y scripts que eliminan tareas repetitivas.</div>
+          </div>
+        </div>
+        <div class="about-feat reveal">
+          <div class="about-feat-icon"><i class="fa-solid fa-headset"></i></div>
+          <div>
+            <div class="about-feat-title">Soporte técnico</div>
+            <div class="about-feat-text">Una vez entregado el programa, me tendrás a tu disposición para solucionar cualquier problema.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-sep" />
+
+  <!-- METHODOLOGY -->
+  <section id="metodologia">
+    <div class="wrap">
+      <div class="reveal">
+        <div class="sec-label">Cómo trabajamos</div>
+        <h2 class="sec-title">Metodología de trabajo</h2>
+        <p class="sec-sub">Un proceso claro y estructurado para garantizar que el resultado final sea exactamente lo que necesitas.</p>
+      </div>
+      <div class="steps">
+        <div class="step reveal">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-tag">Llamada inicial · ~60 min</div>
+            <div class="step-title">Análisis y definición del proyecto</div>
+            <div class="step-text">Analizamos tu herramienta actual, tu flujo de trabajo y las funcionalidades que necesitas. Te muestro proyectos ya terminados para inspirarnos y concretar ideas.</div>
+            <div class="step-hl"><i class="fa-solid fa-bullseye" style="margin-right:7px"></i>Objetivo: definir por completo la estructura y funcionalidades del proyecto.</div>
+          </div>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-tag">Documentación · 48–72 h</div>
+            <div class="step-title">Entrega de documentación técnica</div>
+            <div class="step-text">Recibirás un PDF de 5 - 15 páginas (según complejidad) con la estructura de documentos y hojas, descripción de funcionalidades, fórmulas y automatizaciones.</div>
+            <div class="step-hl"><i class="fa-solid fa-file-lines" style="margin-right:7px"></i>Sirve como base del presupuesto y referencia para posibles cambios futuros.</div>
+          </div>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-tag">Revisión</div>
+            <div class="step-title">Validación por tu parte</div>
+            <div class="step-text">Lees la documentación y confirmas que refleja exactamente lo acordado durante la llamada inicial.</div>
+            <div class="step-hl"><i class="fa-solid fa-gear" style="margin-right:7px"></i>Es el momento de ajustar cualquier detalle del programa antes de presupuestar.</div>
+          </div>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-tag">Presupuesto</div>
+            <div class="step-title">Propuesta económica desglosada</div>
+            <div class="step-text">Elaboro el presupuesto basándome en la documentación aprobada. Desglosando el coste de cada documento, hoja y funcionalidad. Sin sorpresas.</div>
+            <div class="step-hl"><i class="fa-solid fa-credit-card" style="margin-right:7px"></i>Los 47€ + IVA del proceso inicial se descuentan del presupuesto final en caso de ser aceptado.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-sep" />
+
+  <!-- PRICING -->
+  <section id="tarifas">
+    <div class="wrap">
+      <div class="reveal">
+        <div class="sec-label">Tarifas</div>
+        <h2 class="sec-title">Transparencia desde el primer paso</h2>
+      </div>
+      <div class="pricing-wrap reveal">
+        <div class="pricing-card">
+          <div class="pricing-top">
+            <div class="pricing-label">Llamada inicial + Documentación + Presupuesto</div>
+            <div class="pricing-amount"><sup>€</sup>47<sub>+ IVA</sub></div>
+            <div class="pricing-note">Se descuenta del presupuesto final si finalmente es aceptado. Pago único por adelantado.</div>
+          </div>
+          <div class="pricing-features">
+            <div class="feat">
+              <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="feat-text"><strong>Llamada inicial de ~50 minutos</strong><span>Análisis completo de tu flujo de trabajo y necesidades</span></div>
+            </div>
+            <div class="feat">
+              <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="feat-text"><strong>Documentación técnica en PDF (48–72 h)</strong><span>Entre 5 y 15 páginas con toda la estructura final del proyecto</span></div>
+            </div>
+            <div class="feat">
+              <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="feat-text"><strong>Presupuesto detallado y sin compromiso</strong><span>Basado en la documentación aprobada. El presupuesto final sí podrá fraccionarse.</span></div>
+            </div>
+          </div>
+          <div class="pricing-cta-wrap">
+            <a href="https://wa.me/34651381966?text=Hola%20Álvaro%2C%20quiero%20agendar%20la%20llamada%20inicial" target="_blank" class="btn-primary">Empezar ahora — 47€ + IVA</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-sep" />
+
+  <!-- PORTFOLIO -->
+  <section id="portfolio">
+    <div class="wrap">
+      <div class="reveal">
+        <div class="sec-label">Portafolio</div>
+        <h2 class="sec-title">Proyectos reales, resultados reales</h2>
+        <p class="sec-sub">Aquí te dejo 3 proyectos hechos a medida para 3 de mis clientes.</p>
+      </div>
+      <div class="portfolio-grid">
+        <div class="portfolio-card reveal">
+          <div class="portfolio-img-wrap">
+            <img src="mockup1.jpg" alt="Sistema de gestión de clientes" loading="lazy" />
+            <div class="portfolio-img-overlay"></div>
+            <div class="portfolio-img-tag">Gestión</div>
+          </div>
+          <div class="portfolio-body">
+            <div class="portfolio-title">Excel de contabilidad y gestión</div>
+            <div class="portfolio-desc">CRM completo con módulos para guardar y gestionar clientes, trabajadores, productos, ingresos, gastos y movimientos. Navegación lateral y buscador integrado.</div>
+            <div class="portfolio-tags"><span class="ptag">CRM</span><span class="ptag">Contabilidad</span><span class="ptag">Gestión</span><span class="ptag">Dashboards</span><span class="ptag">Control total</span></div>
+          </div>
+        </div>
+        <div class="portfolio-card reveal">
+          <div class="portfolio-img-wrap">
+            <img src="mockup2.jpg" alt="Herramienta de entrenamiento con calculadoras" loading="lazy" />
+            <div class="portfolio-img-overlay"></div>
+            <div class="portfolio-img-tag">Entrenamiento</div>
+          </div>
+          <div class="portfolio-body">
+            <div class="portfolio-title">Excel de entrenamiento integral</div>
+            <div class="portfolio-desc">Ficha del atleta, calculadora de aproximaciones personaliza, semana de entrenamiento, cálculo de métricas, dashboards externos. Todo integrado y automatizado.</div>
+            <div class="portfolio-tags"><span class="ptag">Máximo rendimiento</span><span class="ptag">Antiplagio</span><span class="ptag">Interfaz móvil</span><span class="ptag">Análisis de datos</span></div>
+          </div>
+        </div>
+        <div class="portfolio-card reveal">
+          <div class="portfolio-img-wrap">
+            <img src="mockup3.jpg" alt="Programa de entrenamiento semanal" loading="lazy" />
+            <div class="portfolio-img-overlay"></div>
+            <div class="portfolio-img-tag">Nutrición</div>
+          </div>
+          <div class="portfolio-body">
+            <div class="portfolio-title">Excel para la pauta de planes nutricionales</div>
+            <div class="portfolio-desc">Planifica y ajusta planes nutricionales en segundos mediante sistemas automáticos. Obten los planes en PDF con un par de clics.</div>
+            <div class="portfolio-tags"><span class="ptag">PDF automáticos</span><span class="ptag">Versatilidad</span><span class="ptag">Ajustes automáticos</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-sep" />
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="wrap">
+      <div class="reveal">
+        <div class="sec-label">Preguntas frecuentes</div>
+        <h2 class="sec-title">Todo lo que necesitas saber</h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item reveal"><button class="faq-q" onclick="toggleFaq(this)">¿Qué coste tendría mi proyecto?<span class="faq-arrow">▾</span></button><div class="faq-body"><p>Depende del tipo de proyecto sus funcionalidades, estructura y complejidad. La llamada inicial es clave para definir la magnitud del proyecto y poder presupuestar con precisión. Solo así puedo darte un número real y ajustado a lo que necesitas.</p></div></div>
+        <div class="faq-item reveal"><button class="faq-q" onclick="toggleFaq(this)">¿Qué plazos de entrega tienes?<span class="faq-arrow">▾</span></button><div class="faq-body"><p>Los plazos varían en función de la complejidad del proyecto y la posición en la cola. Una vez aceptado el presupuesto y realizado el primer pago, tu plaza queda fijada.</p></div></div>
+        <div class="faq-item reveal"><button class="faq-q" onclick="toggleFaq(this)">¿Cómo funciona la cola de proyectos?<span class="faq-arrow">▾</span></button><div class="faq-body"><p>El orden se establece según la fecha del primer pago del presupuesto, esto garantiza un sistema justo y transparente para todos en el que tendrás prioridad por encima de los clientes que abonen su primer pago más tarde que tu.</p></div></div>
+        <div class="faq-item reveal"><button class="faq-q" onclick="toggleFaq(this)">¿Los pagos del presupuesto final se pueden fraccionar?<span class="faq-arrow">▾</span></button><div class="faq-body"><p>Sí, el presupuesto final puede fraccionarse en partes iguales. El primer pago es necesario antes de iniciar el proyecto para fijar tu plaza, y el resto antes de la entrega. La llamada inicial (47€ + IVA) se abona aparte, de forma única y, como mínimo, un día antes de la llamada.</p></div></div>
+        <div class="faq-item reveal"><button class="faq-q" onclick="toggleFaq(this)">¿Qué pasa si quiero cambios tras aprobar la documentación?<span class="faq-arrow">▾</span></button><div class="faq-body"><p>La documentación técnica define el alcance acordado. Las modificaciones o ampliaciones solicitadas después de aceptar el presupuesto tendrán un coste adicional. Por eso es clave revisarla bien antes de aprobarla.</p></div></div>
+        <div class="faq-item reveal"><button class="faq-q" onclick="toggleFaq(this)">¿Solo trabajas con entrenadores y nutricionistas?<span class="faq-arrow">▾</span></button><div class="faq-body"><p>Me especializo en ese sector, pero no me cierro a nada. Si necesitas cualquier herramienta en Google Sheets — contabilidad, inventario, gestión de productos, etc. — puedo ayudarte igualmente.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-sep" />
+
+  <!-- CONTACT -->
+  <section id="contacto">
+    <div class="wrap">
+      <div class="reveal">
+        <div class="sec-label">Contacto</div>
+        <h2 class="sec-title">¿Listo para empezar?</h2>
+      </div>
+
+      <p class="contact-intro reveal">Si estás interesado en optimizar tu negocio con una herramienta completamente personalizada, el primer paso es hablar.</p>
+
+      <!-- Contact form — full width below -->
+      <div class="contact-form-card reveal">
+        <div class="form-title">Cuéntame tu proyecto</div>
+        <div class="form-row">
+          <div class="form-group"><label>Tu nombre</label><input type="text" placeholder="Ej: Carlos García" id="f-name" /></div>
+          <div class="form-group"><label>¿A qué te dedicas?</label><select id="f-type"><option value="">Selecciona una opción</option><option>Entrenador/a personal online</option><option>Nutricionista / Dietista</option><option>Entrenador/a + Nutricionista</option><option>Empresa / Otro</option></select></div>
+        </div>
+        <div class="form-group"><label>Describe brevemente el proyecto que necesitas</label><textarea id="f-msg" placeholder="Necesito un programa de entrenamiento que..."></textarea></div>
+        <button class="form-submit" onclick="sendWhatsApp()">Enviar por WhatsApp →</button>
+        <div class="form-note">Al enviar, se abrirá WhatsApp con tu mensaje prellenado.</div>
+      </div>
+
+      <p class="contact-intro reveal"></p>
+
+      <!-- Contact buttons grid (2 columns) -->
+      <div class="contact-methods reveal">
+        <a href="https://wa.me/34651381966?text=Hola%20Álvaro%2C%20me%20interesa%20una%20herramienta%20de%20Google%20Sheets%20para%20mi%20negocio" target="_blank" class="contact-btn">
+          <div class="contact-btn-icon wb-icon"><svg viewBox="0 0 24 24" fill="white" width="20" height="20"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></div>
+          <div><div class="contact-btn-label">WhatsApp</div><div class="contact-btn-sub">+34 651 381 966</div></div>
+        </a>
+        <a href="https://instagram.com/alvaro_1208" target="_blank" class="contact-btn">
+          <div class="contact-btn-icon ig-icon"><svg viewBox="0 0 24 24" fill="white" width="18" height="18"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></div>
+          <div><div class="contact-btn-label">Instagram personal</div><div class="contact-btn-sub">@alvaro_1208</div></div>
+        </a>
+        <a href="https://instagram.com/pro_sheet" target="_blank" class="contact-btn">
+          <div class="contact-btn-icon ig-icon"><svg viewBox="0 0 24 24" fill="white" width="18" height="18"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></div>
+          <div><div class="contact-btn-label">ProSheet · Instagram oficial</div><div class="contact-btn-sub">@pro_sheet</div></div>
+        </a>
+        <a href="/cdn-cgi/l/email-protection#5d34333b321d2d2f322e3538382973382e" class="contact-btn">
+          <div class="contact-btn-icon em-icon"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" width="18" height="18"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+          <div><div class="contact-btn-label">Correo electrónico</div><div class="contact-btn-sub"><span class="__cf_email__" data-cfemail="3f565159507f4f4d504c575a5a4b115a4c">[email&#160;protected]</span></div></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <a href="#hero" class="footer-logo">
+      <img src="logo.png" alt="ProSheet" />
+      <span class="footer-logo-text">ProSheet</span>
+    </a>
+    <div class="footer-copy">© 2026 ProSheet · Todos los derechos reservados</div>
+  </footer>
+
+  <!-- WA FLOAT -->
+  <a href="https://wa.me/34651381966?text=Hola%20Álvaro%2C%20me%20interesa%20una%20herramienta%20de%20Google%20Sheets%20para%20mi%20negocio" target="_blank" class="wa-float" title="WhatsApp">
+    <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  </a>
+
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    /* ── THEME TOGGLE ── */
+    const themeToggle = document.getElementById('themeToggle');
+    const savedTheme = localStorage.getItem('prosheet-theme');
+    if (savedTheme === 'light') document.body.classList.add('light');
+
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light');
+      localStorage.setItem('prosheet-theme', document.body.classList.contains('light') ? 'light' : 'dark');
+    });
+
+    /* ── FAQ ── */
+    function toggleFaq(btn) {
+      const item = btn.closest('.faq-item');
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    }
+
+    /* ── WHATSAPP FORM ── */
+    function sendWhatsApp() {
+      const name = document.getElementById('f-name').value.trim();
+      const type = document.getElementById('f-type').value;
+      const msg  = document.getElementById('f-msg').value.trim();
+      if (!name || !msg) { alert('Por favor, completa tu nombre y describe tu proyecto.'); return; }
+      const text = `Hola Álvaro! Soy ${name}${type ? `, ${type}` : ''}.%0A%0AMe interesa crear una herramienta de Google Sheets. Te cuento:%0A${encodeURIComponent(msg)}`;
+      window.open(`https://wa.me/34651381966?text=${text}`, '_blank');
+    }
+
+    /* ── SCROLL REVEAL ── */
+    const obs = new IntersectionObserver(
+      entries => entries.fo
